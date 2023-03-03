@@ -1,7 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<fcntl.h>
-#include<unistd.h>
 #include<string.h>
 
 
@@ -32,21 +30,22 @@ int main(int argc ,char ** argv){
 
   FILE *  fd  = fopen(argv[1],"r");
 
-  
+  int i = 0;
   if(fd){
-        char  b;
-	int i = 0;
-        tar_s * tt;
+         //char  b;
+	//	int i = 0;
+        //tar_s * tt;
 	while(!feof(fd)){
-	  tt = (tar_s *) malloc(sizeof(tar_s));
-	  // printf("\nsize %ld\n",sizeof(tt));
+	 tar_s * tt = (tar_s *) malloc(sizeof(tar_s));
+	 memset(tt,0, sizeof(tar_s));
+	 // printf("\nsize %ld\n",sizeof(tt));
 	  if(0 < fread(tt,sizeof(tar_s),1,fd)){
 
 	    if(i == 0){
               fprintf(stdout,"Name is archive -> %s\n",tt->name);
               i++;
 	    }else if(strlen(tt->name) != 0){
-	    fprintf(stdout,"file %d -> %s\n",i, tt->name);
+	      fprintf(stdout,"file %d -> %s  size -> %s \n",i, tt->name, tt->size);
 	    i++;
 	    }  
 
@@ -55,7 +54,8 @@ int main(int argc ,char ** argv){
 	  free(tt);	  
  
 	}
-		fclose(fd);
+	printf("####COUNT FILES IN ARCHIVE %d ####\n",i -1);
+	fclose(fd);
   }
 	return 0;
 }
