@@ -34,10 +34,14 @@ int create_file_des(const  char * file){
 /*closed file descriptor*/
 void destroy_file_des(int fd){
 
-  close(fd);
+ int c =  close(fd);
+ if( 0 > c){
+   printf("File description don't close \n ");
+   exit(1);
+ }
 }
 /* created array bits */
-void insert_bits(char * a){a[0] = 0x50; a[1] = 0x4B; a[2] = 0x01; a[3] = 0x02;}
+void insert_bits(char * a){a[0] = 0x50; a[1] = 0x4B; a[2] = 0x01; a[3] = 0x02; a[4]= 0x00;}
 
 /* read zip archive*/
 
@@ -50,7 +54,7 @@ void read_file_zip_archive(int fd ,char *a ,int size){
   int count = 0;
   int count_find_file = 0;
   zip zip_archive;
-  
+ uint8_t  size_buff = 255;
   while((size_read = read(fd,&c, 1)) > 0){
     if((c == aa[0] || aa[0] == 0x0) && count < size){
       //      printf("%c",c);
@@ -68,7 +72,15 @@ void read_file_zip_archive(int fd ,char *a ,int size){
 
       // printf( " -> %ud <- \n",zip_archive.str_len);
       read(fd,&buff,zip_archive.filenameLength);
+      if(zip_archive.filenameLength > size_buff){
+	printf("Length of buff >  256 \n %d ",zip_archive.filenameLength);
+	exit(1);
+      }else{
       buff[zip_archive.filenameLength] = '\0';
+      }
+      
+      //buff[zip_archive.filenameLength] = '\0';
+
       printf( " number of file [ %d ] -> %s  \n",count_find_file++,buff);
       count_find_file++;
       aa=a;
@@ -77,7 +89,7 @@ void read_file_zip_archive(int fd ,char *a ,int size){
 
     }
   if(count_find_file){
-  
+    printf("COUNT OF FILES IN ARCHIVE ->  %d \n" ,count_find_file);  
     
   }else{
        printf("file dont have archive \n");
@@ -88,7 +100,11 @@ void read_file_zip_archive(int fd ,char *a ,int size){
 
 
 int main(int argc ,char ** argv){
-
+  if( 2 > argc || 2 < argc ){
+    printf(" %s <archive file >\n",argv[0]);
+    exit(1);
+  }
+   
   int fd = create_file_des(argv[1]);
 
 
