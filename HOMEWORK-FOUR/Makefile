@@ -17,4 +17,4 @@ parsing.o:parsing.c
 	$(CC) $(FLAG) -fPIC -c parsing.c
 
 clean:
-	rm -rf libparsing.so *.o main *.*~  *~
+	rm -rf libparsing.so *.o main *.*~  *~  file.log
