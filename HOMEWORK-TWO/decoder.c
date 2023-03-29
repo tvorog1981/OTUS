@@ -29,49 +29,28 @@ int choose_encoding(char * argv){
 }
 
 
-
-
-
 /* functions encoding */
 void encoding_koi8_r(char * s,char * d){
-
   /* flags open and create file */
   int flag = O_RDONLY | O_WRONLY | O_CREAT;
-
   /* mode create file */
   mode_t mode = S_IRUSR | S_IWUSR;
-
-  /* files description */
+/* files description */
   int fd_s = open(s,O_RDONLY);
   int fd_d = open(d,flag,mode);
-
   /* check file description */
   if(0 > fd_s || 0 > fd_d){
     printf("Can not create file description \n ");
-    exit(1);
-    
+    exit(1);    
   }
-  
-  /* read file */
+    /* read file */
   uint8_t ch;
   size_t  count_read_bit;
-  //  uint8_t ff = 0xEF;
-  //uint8_t ss = 0xBB;
-  //uint8_t tt = 0xBF;
-  //  write(fd_d,&ff, sizeof(ff));
-  //  write(fd_d,&ss, sizeof(ss));
-  //  write(fd_d,&tt, sizeof(tt));
-
     while( (count_read_bit =read(fd_s,&ch,sizeof(ch))) > 0 ){
-
-     
-     if(ch >= 192 && ch <= 255){
-    
+   if(ch >= 192 && ch <= 255){    
        uint16_t code = unicode_koi8r[ch -192];
+       uint8_t buff[2]={0};
        
-        uint8_t buff[3];
-       	//printf("|ch %d ->  0x%x |\n",ch, code);
-
 	if(ch <=0x7F){
 	 code = (uint8_t)code;
 	  // printf("|ch -> %c |",ch);
@@ -86,15 +65,7 @@ void encoding_koi8_r(char * s,char * d){
 	 // printf("%s ->  ",buff);
 	 write(fd_d,&buff, sizeof(buff));
 	 }
-	 else{
-
-	 buff[0] = (uint8_t)(((code >>12) & 0x0F)| 0xE0);
-      	 buff[1]= (uint8_t)(((code >> 6)  & 0x3F) | 0x80);
-	 buff[2]= (uint8_t)(((code >> 0)  & 0x3F) | 0x80);
-	  //   printf("%s ->  ",buff);
-	 write(fd_d,&buff, sizeof(buff));
-        }
-	
+		
      }else{
               write(fd_d,&ch, sizeof(ch));
 	   }
@@ -128,29 +99,20 @@ void   encoding_cp_1251(char * s ,char * d){
   /* read file */
   uint8_t ch;
   size_t  count_read_bit;
-  //  uint8_t ff = 0xEF;
-  //uint8_t ss = 0xBB;
-  //uint8_t tt = 0xBF;
-  //  write(fd_d,&ff, sizeof(ff));
-  //  write(fd_d,&ss, sizeof(ss));
-  //  write(fd_d,&tt, sizeof(tt));
+ 
 
     while( (count_read_bit =read(fd_s,&ch,sizeof(ch))) > 0 ){
 
 
-       
-       
          if(ch >= 192 && ch <= 255){
-      // if(ch == 224 || ch == 192){
+      
     
 	uint16_t code = unicode_win1251[ch -191];
+	uint8_t buff[2]={0};
        
-        uint8_t buff[3];
-	//	printf("|ch %d ->  0x%x |\n",ch, code);
 
 	if(code <=0x7F){
 	  buff[0] = (uint8_t)code;
-	  // printf("|ch -> %c |",ch);
 	  write(fd_d,&buff, sizeof(buff));
      	  
 	}
@@ -158,20 +120,12 @@ void   encoding_cp_1251(char * s ,char * d){
         else if(code  <= 0x07FF){
 	
 		 buff[0] = (uint8_t)(((code >> 6) & 0x1F)| 0xc0);
-	 buff[1]= (uint8_t)(((code >>  0)  & 0x3F) | 0x80);
-	 // printf("%s ->  ",buff);
-	 write(fd_d,&buff, sizeof(buff));
+		 buff[1]= (uint8_t)(((code >>  0)  & 0x3F) | 0x80);
+	         write(fd_d,&buff, sizeof(buff));
 	 }
-	 else{
-
-	 buff[0] = (uint8_t)(((code >>12) & 0x0F)| 0xE0);
-      	 buff[1]= (uint8_t)(((code >> 6)  & 0x3F) | 0x80);
-	 buff[2]= (uint8_t)(((code >> 0)  & 0x3F) | 0x80);
-	  //   printf("%s ->  ",buff);
-	 write(fd_d,&buff, sizeof(buff));
-        }
+	 
 	
-     }else{
+	 }else{
               write(fd_d,&ch, sizeof(ch));
 	   }
 
@@ -182,13 +136,8 @@ void   encoding_cp_1251(char * s ,char * d){
   /* close file description */
   close(fd_s);
   close(fd_d);
-
-
-
-
-
 }
-   
+
 void  encoding_iso_8859_5(char * s ,char * d){
   /* flags open and create file */
   int flag = O_RDONLY | O_WRONLY | O_CREAT;
@@ -210,32 +159,14 @@ void  encoding_iso_8859_5(char * s ,char * d){
   /* read file */
   uint8_t ch;
   size_t  count_read_bit;
-  //  uint8_t ff = 0xEF;
-  //uint8_t ss = 0xBB;
-  //uint8_t tt = 0xBF;
-  //  write(fd_d,&ff, sizeof(ff));
-  //  write(fd_d,&ss, sizeof(ss));
-  //  write(fd_d,&tt, sizeof(tt));
-
+  
     while( (count_read_bit =read(fd_s,&ch,sizeof(ch))) > 0 ){
-
-      //	uint16_t code = unicode_win1251[ch -176 +1 ];
-       
-      //	printf("|ch %d ->  0x%x |\n",ch, code);
-           
          if(ch >= 176 && ch <= 239){
-      // if(ch == 224 || ch == 192){
-    
-	uint16_t code = unicode_win1251[ch -176 + 1];
-           
-	uint8_t buff[3] = {0};
-	//	printf("|ch %d ->  0x%x |\n",ch, code);
-
-		if(code <=0x7F){
-	 buff[0] = (uint8_t)code;
-	  // printf("|ch -> %c |",ch);
-	  write(fd_d,&buff, sizeof(buff));
-     	  
+	  uint16_t code = unicode_win1251[ch -176 + 1];
+           uint8_t buff[2] = {0};
+       	if(code <=0x7F){
+	 buff[0] = (uint8_t)code;	  
+	 write(fd_d,&buff, sizeof(buff));  	  
 	 	}
 
 	   else if(code  <= 0x07FF){
@@ -245,14 +176,9 @@ void  encoding_iso_8859_5(char * s ,char * d){
 	   //  printf("%s ->  ",buff);
 	   write(fd_d,&buff, sizeof(buff));
 	   }
-	  else{
+	  
 
-	   buff[0] = (uint8_t)(((code >>12) & 0x0F)| 0xE0);
-	   buff[1]= (uint8_t)(((code >> 6)  & 0x3F) | 0x80);
-	   buff[2]= (uint8_t)(((code >> 0)  & 0x3F) | 0x80);
-	  //   printf("%s ->  ",buff);
-	   write(fd_d,&buff, sizeof(buff));
-	   }
+	
 	
      }else{
               write(fd_d,&ch, sizeof(ch));
@@ -260,27 +186,11 @@ void  encoding_iso_8859_5(char * s ,char * d){
 
     }
 
-		   
-  
   /* close file description */
   close(fd_s);
   close(fd_d);
 
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
 
 
 
