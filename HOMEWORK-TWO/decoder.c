@@ -32,7 +32,7 @@ int choose_encoding(char * argv){
 /* functions encoding */
 void encoding_koi8_r(char * s,char * d){
   /* flags open and create file */
-  int flag = O_RDONLY | O_WRONLY | O_CREAT;
+  int flag =  O_WRONLY | O_CREAT;
   /* mode create file */
   mode_t mode = S_IRUSR | S_IWUSR;
 /* files description */
@@ -80,7 +80,7 @@ void encoding_koi8_r(char * s,char * d){
 }
 void   encoding_cp_1251(char * s ,char * d){
   /* flags open and create file */
-  int flag = O_RDONLY | O_WRONLY | O_CREAT;
+  int flag =  O_WRONLY | O_CREAT;
 
   /* mode create file */
   mode_t mode = S_IRUSR | S_IWUSR;
@@ -140,7 +140,7 @@ void   encoding_cp_1251(char * s ,char * d){
 
 void  encoding_iso_8859_5(char * s ,char * d){
   /* flags open and create file */
-  int flag = O_RDONLY | O_WRONLY | O_CREAT;
+  int flag =  O_WRONLY | O_CREAT;
 
   /* mode create file */
   mode_t mode = S_IRUSR | S_IWUSR;
