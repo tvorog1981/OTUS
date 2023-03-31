@@ -2,7 +2,7 @@ FLAG=-Wall -Wextra -Wpedantic -std=c11
 LIB_CURL= -lcurl
 LIB_JSON= -lcjson
 CC=clang
-
+PKG=`pkg-config --libs --flags libcjson`
 
 json:curl.o
 	$(CC) $(FLAG) $(LIB_CURL) $(LIB_JSON) -o json curl.o

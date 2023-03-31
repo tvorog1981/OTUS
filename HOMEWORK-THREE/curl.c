@@ -254,20 +254,30 @@ int main(int argc , char ** argv){
      curl_easy_setopt(curl,CURLOPT_WRITEDATA,(void *)&server);
     
 
-    response = curl_easy_perform(curl);
-    
+     response = curl_easy_perform(curl);
+      
+      long code = 0;
+      curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE,&code);
     /* status response from server bad */
-    if(response != CURLE_OK){
+    if(response != CURLE_OK || code == CURLE_ABORTED_BY_CALLBACK){
+     
       free(url_path);
       free(server.response);
-      fprintf(stderr,"faild %s \n",curl_easy_strerror(response));
+      
+      
+       if(code == 503){ printf("server have code ->%d\n",503);}
+       if(code == 400){ printf("server have code ->%d\n",400);}
+      if(code == 500){ printf("server have code ->%d\n",500);}
+        fprintf(stderr,"faild %s \n",curl_easy_strerror(response));
+      
+      
     }
     
     // printf("%s" ,server.response);
 
 
     /* status response from server OK */
-    if(response == CURLE_OK){
+    if(response == CURLE_OK  && code == 200){
       weather_json((const  char *  const)server.response);   
       free(server.response);
       free(url_path);
