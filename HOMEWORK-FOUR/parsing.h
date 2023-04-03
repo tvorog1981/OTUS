@@ -10,6 +10,7 @@
 #include<sys/stat.h>
 #include<fcntl.h>
 #include<time.h>
+#include<execinfo.h>
 FILE * fd;
 #define FILE_NAME  "file.log"
 

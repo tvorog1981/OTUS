@@ -1,4 +1,4 @@
-
+﻿
 #include"parsing.h"
 
 /* init log */
@@ -124,6 +124,28 @@ void error_log(char * format,...){
 	    error,__LINE__,__FILE__,p);
 
   }
+int BT_BUF_SIZE = 100;
+
+ int nptrs;
+           void *buffer[BT_BUF_SIZE];
+           char **strings;
+	   /* stack run */
+           nptrs = backtrace(buffer, BT_BUF_SIZE);
+           printf("backtrace() returned %d addresses\n", nptrs);
+
+	   // backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO);
+          
+
+           strings = backtrace_symbols(buffer, nptrs);
+           if (strings == NULL) {
+               perror("backtrace_symbols");
+               exit(EXIT_FAILURE);
+           }
+
+           for (int j = 0; j < nptrs; j++)
+               printf("%s\n", strings[j]);
+
+           free(strings);
   
     va_end(ap);
 
