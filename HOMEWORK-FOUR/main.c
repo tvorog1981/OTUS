@@ -1,4 +1,6 @@
-#include"parsing.h"
+﻿#include"parsing.h"
+
+
 int main(){
 
   init_log();
@@ -7,10 +9,10 @@ int main(){
   char * d = "text debug";
   char * i = "text info";
   char * e = "text error";
-  warning_log("%s",w);
-  debug_log("%s",d);
-  info_log("%s",i);
-  error_log("%s",e);
+  w_log(w);
+  d_log(d);
+  i_log(i);
+  e_log(e);
   
   
 
