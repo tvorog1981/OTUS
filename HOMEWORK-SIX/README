@@ -1,0 +1,1 @@
+clang -Wall -Wextra -std=c11 -o glut -lglut -lGL -lm -lGLU  main.c
