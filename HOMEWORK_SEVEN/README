@@ -1,0 +1,1 @@
+gcc  -std=c11 -lGLU -lglut -lGL -Wall -Wextra -o glut   main.c 
