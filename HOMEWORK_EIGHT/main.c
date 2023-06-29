@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<libpq-fe.h>
+#include<math.h>
 static void __attribute__ ((noreturn)) finish_with_error(PGconn* conn) {
 puts(PQerrorMessage(conn));
 PQfinish(conn);
@@ -38,17 +39,17 @@ void avarage_postgres(PGresult *res, int count_row){
     avr += 1;
     printf("%d\n",rez);
   }
-
+ int a = sum /avr;
   for(int i = 0 ; i < count_row;i++){
         char* id = PQgetvalue(res, i, 0);
     int rez =  strtol(id, (char **)NULL, 10);
-    dis += (double)(rez - sum/avr) * 2/count_row;
+    dis +=( (rez - a) * (rez - a));
 
 
   }
+  
 
-
-  printf("sum => %d avr => %d  max => %d min => %d dispersia => %lf \n",sum, sum/ avr,max,min,dis);
+  printf("sum => %d avr => %d  max => %d min => %d dispersia => %lf \n",sum, a,max,min,(dis / count_row));
 }
 
 int main(int argc ,char ** argv){
