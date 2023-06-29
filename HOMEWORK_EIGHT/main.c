@@ -18,7 +18,7 @@ void close_db(PGconn * conn ,PGresult * res){
 
 void avarage_postgres(PGresult *res, int count_row){
   int sum = 0;
-  int avr = 0;
+  int count = 0;
   int max = 0;
   int min = 0;
   double dis;
@@ -36,21 +36,21 @@ void avarage_postgres(PGresult *res, int count_row){
       }
     }
     sum += rez;
-    avr += 1;
-    printf("%d\n",rez);
+    count += 1;
+    // printf("%d\n",rez);
   }
- int a = sum /avr;
-  for(int i = 0 ; i < count_row;i++){
+  double avr = (float)sum / count;
+  // printf("\nsred %d count ele %d\n",a,avr);
+ for(int i = 0 ; i < count_row;i++){
         char* id = PQgetvalue(res, i, 0);
     int rez =  strtol(id, (char **)NULL, 10);
-    dis +=( (rez - a) * (rez - a));
-
+    dis += pow((rez - avr),2.0);
+    printf("ddd %lf \n",dis);
 
   }
   
 
-  printf("sum => %d avr => %d  max => %d min => %d dispersia => %lf \n",sum, a,max,min,(dis / count_row));
-}
+  printf("sum => %d avr => %lf  max => %d min => %d dispersia => %lf \n",sum, avr,max,min, dis/count);}
 
 int main(int argc ,char ** argv){
   if(argc < 4 || argc > 4){
