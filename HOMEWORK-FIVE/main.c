@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/un.h>
@@ -12,6 +13,8 @@
 #include <limits.h>       
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include<stdbool.h>
+#include <sys/uio.h>
 #define BUFF_SOCK 255
 
 void  read_from_buff(char *fd_buf, int size,int * code, int  * size_file){
@@ -43,7 +46,7 @@ void  read_from_buff(char *fd_buf, int size,int * code, int  * size_file){
  if(ff > 0 ){
  wait(NULL);
 
-// printf("code %d",code);
+ // printf("code %d",code);
    fclose(fd);
    }
 
@@ -53,6 +56,8 @@ void  read_from_buff(char *fd_buf, int size,int * code, int  * size_file){
 
 
 int main(){
+
+
   char *  path_sock = "/tmp/sock_bind";
   int server_sock;
   int client_sock;
@@ -82,23 +87,70 @@ int main(){
   
   
   memset(&buff_sock, 0 ,sizeof(buff_sock)); 
-
+  FILE * config = NULL;
   listen(server_sock,10);
   printf("Ready to data from client \n");
 
   fflush(stdin);
-  int f = fork();
+  
+  while(true){
+
+    int f = fork();
 
  if(f == 0){  
-     client_sock = accept(server_sock , NULL, NULL);
-     recv(client_sock,&buff_sock,BUFF_SOCK,0);
-     read_from_buff(buff_sock,strlen(buff_sock),&code,&size_file);
+   if(config !=NULL){
+     fclose(config);
+     config = NULL;
+   } 
+   char ch ;
+   int flag = 1;
+   int rez ;
+   char count[10];
+   int file_count;
+   memset(count,0, 10);
+   config = fopen("config.file","r");
+   if(config == NULL){
+     printf("config file not exist\n");
+     exit(11);
+   }else{
+     int i = 0;
+     while((ch = getc(config)) != EOF){
+       if(ch == '='){
+	 flag = 0;
+	 continue;
+       }               
+       if(flag == 0){
+	 // printf("%c",ch);
+	 count[i] = ch;
+       i++;
+       }
+   }
+   }
+      file_count = strtoumax(count, NULL, 10);
+   //   printf("count %s " ,count);  
+      //      printf("real size count %d size config %d " , file_count,file_count);
 
+   
+   
+   client_sock = accept(server_sock , NULL, NULL);
+     recv(client_sock,&buff_sock,BUFF_SOCK,0);
+
+     read_from_buff(buff_sock,strlen(buff_sock),&code,&size_file);
+    
  if (code == 1){
        memset(buff_sock,0,BUFF_SOCK);
-       sprintf(buff_sock,"size file %d\n",size_file);
-              send(client_sock,&buff_sock,BUFF_SOCK,0);
-     }
+       if(size_file != file_count){
+       sprintf(buff_sock,"real size file %d size in config %d\n",size_file,file_count);
+       }else{
+      sprintf(buff_sock,"real size file %d \n",size_file);
+       }
+       send(client_sock,&buff_sock,BUFF_SOCK,0);
+                 shutdown(client_sock,0);    
+	       shutdown(client_sock,1);	       
+	       fclose(config);
+
+	       config = NULL;
+ }
 
  else if(code == 2){
    int ffff = fork();
@@ -106,27 +158,38 @@ int main(){
    if(ffff == 0){
    memset(buff_sock,0,BUFF_SOCK);
        sprintf(buff_sock,"file not exist \n");
-        send(client_sock,&buff_sock,BUFF_SOCK,MSG_CONFIRM );
-
+         send(client_sock,&buff_sock,BUFF_SOCK,MSG_CONFIRM );
+	       shutdown(client_sock,0);    
+	       shutdown(client_sock,1);
+                       
      }   
  }
 
  wait(NULL);
+ if(config !=NULL){
+  
+   //  unlink((const char )config);
+ }
  
-     
-   
-    
-     
-  }
 
-  waitpid(-1,&status,0);  
+   
+ //       fclose(config);
+ 
+ }else{
+   sleep(5);
+ }
+
+
+  waitpid(-1,&status,0);
   // send(client_sock,&buff_sock,BUFF_SOCK,0);
 
 
-     unlink(path_sock);  
-     close(client_sock);
-     close(server_sock);
  
+     
+  }
+
+     close(server_sock);
+     
 
  
 
