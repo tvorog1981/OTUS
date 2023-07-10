@@ -1,0 +1,3 @@
+Пример:
+1 server -> ./server -d
+2 client -> nc -U /tmp/sock_bind
