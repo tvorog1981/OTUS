@@ -52,12 +52,16 @@ void display()
 }
 
 
+void resize(){
+ 
+}
 
 void timer()
 
 {
   ++a;
   ++b;
+  glutReshapeFunc(resize);  
   display();
   glutTimerFunc(10, timer, 0);
  }
