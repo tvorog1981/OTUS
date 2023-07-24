@@ -59,12 +59,15 @@ void negotiate(int sock, unsigned char *buf, int len) {
       
     if (buf[1] == DO && buf[2] == CMD_WINDOW_SIZE) {
         unsigned char tmp1[10] = {255, 251, 31};
-        if (send(sock, tmp1, 3 , 0) < 0)
-            exit(1);
-         
+        if (send(sock, tmp1, 3 , 0) < 0){
+          printf("error send \n");
+	  exit(1);
+	}
         unsigned char tmp2[10] = {255, 250, 31, 0, 80, 0, 24, 255, 240};
-        if (send(sock, tmp2, 9, 0) < 0)
-            exit(1);
+        if (send(sock, tmp2, 9, 0) < 0){
+          printf("error send \n");
+	  exit(1);
+	}
         return;
     }
      
@@ -75,8 +78,10 @@ void negotiate(int sock, unsigned char *buf, int len) {
             buf[i] = DO;
     }
  
-    if (send(sock, buf, len , 0) < 0)
-        exit(1);
+    if (send(sock, buf, len , 0) < 0){
+      printf("error send \n");
+      exit(1);
+    }
 }
  
 static struct termios tin;
