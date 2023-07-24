@@ -21,7 +21,7 @@
 
 
 
-
+#define BUFLEN 20
 #define DO 0xfd
 #define WONT 0xfc
 #define WILL 0xfb
@@ -50,7 +50,13 @@ char * get_dns_to_ip(char * hostname){
 
 void negotiate(int sock, unsigned char *buf, int len) {
     int i;
-     
+    if(strlen(buf) > BUFLEN){
+      printf("big data \n");
+      exit(6);
+    } 
+
+
+      
     if (buf[1] == DO && buf[2] == CMD_WINDOW_SIZE) {
         unsigned char tmp1[10] = {255, 251, 31};
         if (send(sock, tmp1, 3 , 0) < 0)
@@ -90,7 +96,7 @@ static void terminal_reset(void) {
     tcsetattr(STDIN_FILENO,TCSANOW,&tin);
 }
  
-#define BUFLEN 20
+
 int main(int argc , char *argv[]) {
     int sock;
     struct sockaddr_in server;
@@ -113,7 +119,13 @@ int main(int argc , char *argv[]) {
         return 1;
     }
  
-    server.sin_addr.s_addr = inet_addr(get_dns_to_ip(argv[1]));
+    if(INADDR_NONE != inet_addr(get_dns_to_ip(argv[1]))){
+	server.sin_addr.s_addr = inet_addr(get_dns_to_ip(argv[1]));
+      }else{
+	printf("cannot rezolve %s \n",argv[1]);
+        exit(4);
+
+      }
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
  
@@ -153,8 +165,13 @@ int main(int argc , char *argv[]) {
         else if (sock != 0 && FD_ISSET(sock, &fds)) {
             // start by reading a single byte
             int rv;
-            if ((rv = recv(sock , buf , 1 , 0)) < 0)
-                return 1;
+            if ((rv = recv(sock , buf , 1 , 0)) < 0){
+              printf("Error recv \n");
+	      return 1;
+	    }else if( strlen(buf) > BUFLEN){
+              printf("big data ");
+	      exit(7);
+	    }
             else if (rv == 0) {
                 printf("Connection closed by the remote end\n\r");
                 return 0;
@@ -163,8 +180,10 @@ int main(int argc , char *argv[]) {
             if (buf[0] == CMD) {
                 // read 2 more bytes
                 len = recv(sock , buf + 1 , 2 , 0);
-                if (len  < 0)
-                    return 1;
+                if (len  < 0){
+                  printf("error recv \n");
+		  return 1;
+		}   
                 else if (len == 0) {
                     printf("Connection closed by the remote end\n\r");
                     return 0;
@@ -172,6 +191,7 @@ int main(int argc , char *argv[]) {
                 negotiate(sock, buf, 3);
             }
             else {
+	      
                 len = 1;
                 buf[len] = '\0';
                 printf("%s", buf);
@@ -181,8 +201,10 @@ int main(int argc , char *argv[]) {
          
         else if (FD_ISSET(0, &fds)) {
             buf[0] = getc(stdin); //fgets(buf, 1, stdin);
-            if (send(sock, buf, 1, 0) < 0)
-                return 1;
+            if (send(sock, buf, 1, 0) < 0){
+              printf("Error send \n");
+	      return 1;
+	    }
             if (buf[0] == '\n') // with the terminal in raw mode we need to force a LF
                 putchar('\r');
         }
