@@ -82,7 +82,6 @@ void* create_shared_memory(size_t size) {
 
 
 
-#define SIZE_BUFF  1
 
 
 
@@ -90,7 +89,7 @@ int main(int argc ,char ** argv){
   long long count = 0;
   uint64_t rez = 0;
   struct stat st;
-
+  long page_size = sysconf(_SC_PAGE_SIZE) * 1024;
   if(argc < 2 || argc > 2){
     printf(" You want to %s <file> \n",argv[0]);
     exit(1);
@@ -110,18 +109,17 @@ int main(int argc ,char ** argv){
 
   size_t fsize = (size_t)st.st_size;
 
-  printf("size of file %ld \n",fsize);
+  printf("size of file %ld page size %d \n",fsize,page_size);
   char * dataPtr = NULL;  
   
  
    while (fsize > count){
     
-     dataPtr = (char *)mmap(NULL,fsize <<count ,PROT_READ,MAP_PRIVATE,fd,0);
-  
-   rez +=  crc32((char  *)dataPtr, 1);
-
-   munmap(dataPtr, fsize << count);
-   count =+ 128;
+     dataPtr = (char *)mmap(NULL,page_size ,PROT_READ |PROT_WRITE,MAP_PRIVATE,fd,count);  
+   rez +=  crc32((char  *)dataPtr, page_size);
+      
+   munmap(dataPtr, count);
+    count =+ page_size;
    // count +=4096;
    // lseek( fd, count,1);
   
