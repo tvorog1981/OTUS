@@ -4,8 +4,8 @@
 #include<string.h>
 
 #define HASH_PARAMS  255
-#define SIZE_ARRAY_STR 10
-#define COUNT_HASH 100000000
+#define SIZE_ARRAY_STR 11
+#define COUNT_HASH 255
 #define LENGTH_STR  1024
 struct _HashTab{
   int size;
@@ -97,7 +97,7 @@ int main(int argc,char ** argv){
 
 
 
-  char * array_str[SIZE_ARRAY_STR] = {"ekaterina","roman","beer", "ev","smetankin","denis","vas","byte","bite","cash" };
+  char * array_str[SIZE_ARRAY_STR] = {"deniskina","ekaterina","roman","beer", "ev","smetankin","denis","vas","byte","bite","cash" };
   HashTab h;
   init_hashtab(&h);
 
@@ -121,10 +121,16 @@ int main(int argc,char ** argv){
 //
 int return_hash(char * str, int size){
   int hash = 0 ;
-  for(int i = 0 ; i < size;i++){
-    hash += (int)str[i]  + HASH_PARAMS;
+  int i = 0 ;
+  while(str[i] != '\0'){
+    hash += (int)(str[i]);
+    i++;
   }
-  return hash;
+
+  //for(int i = 0 ; i < size;i++){
+    // hash += (int)str[i]  + HASH_PARAMS;
+    //  }
+  return hash %  HASH_PARAMS;
 }
 
 
